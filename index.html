@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Анализы крови простыми словами</title>
+<style>
+:root{
+  --bg:#f3f7f6;--card:#ffffff;--ink:#16303a;--muted:#5a7078;--line:#d9e4e2;
+  --accent:#0e6b73;--ok:#2b8a57;--warn:#b97a0b;--bad:#bf4630;--zone:#cfe9dc;--track:#e4ecea;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1b1f;--card:#16262b;--ink:#e6f0ee;--muted:#9bb2b8;--line:#2a3f45;
+    --accent:#5cc4cc;--ok:#5fcf91;--warn:#e3a93f;--bad:#f07b62;--zone:#24503f;--track:#233940;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1b1f;--card:#16262b;--ink:#e6f0ee;--muted:#9bb2b8;--line:#2a3f45;
+  --accent:#5cc4cc;--ok:#5fcf91;--warn:#e3a93f;--bad:#f07b62;--zone:#24503f;--track:#233940;color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 clamp(26px,5vw,36px)/1.15 Georgia,"Times New Roman",serif;margin:8px 0 10px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 18px;max-width:60ch}
+.note{border-left:4px solid var(--accent);background:var(--card);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;color:var(--muted);margin:0 0 20px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);margin-bottom:6px}
+.seg button{border:0;background:none;color:var(--ink);padding:9px 18px;font:inherit;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg);font-weight:600}
+.lbl{font-size:14px;color:var(--muted);margin:0 0 6px}
+.sum{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0 22px}
+.sum h2{font-size:18px;margin:0 0 6px}
+.sum p{margin:4px 0}
+.sum ul{margin:8px 0 0;padding-left:20px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nm{font-weight:650;font-size:17px}
+.inp{display:flex;align-items:center;gap:8px}
+.inp input{width:110px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.inp input:focus,.seg button:focus-visible,summary:focus-visible,.rng input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.unit{color:var(--muted);font-size:14px}
+.ref{font-size:13px;color:var(--muted);margin:4px 0 0}
+.bar{position:relative;height:10px;border-radius:5px;background:var(--track);margin:14px 0 8px;display:none}
+.row.has .bar{display:block}
+.zone{position:absolute;top:0;bottom:0;background:var(--zone);border-radius:5px}
+.mk{position:absolute;top:-4px;width:6px;height:18px;border-radius:3px;background:var(--ink);transform:translateX(-3px)}
+.msg{margin:4px 0 0;font-size:15px;display:none}
+.row.has .msg{display:block}
+.st{font-weight:650}
+.s-ok{color:var(--ok)}.s-warn{color:var(--warn)}.s-bad{color:var(--bad)}
+details{margin-top:8px;font-size:14.5px}
+summary{cursor:pointer;color:var(--accent);font-weight:600}
+details p{margin:6px 0}
+.rng{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--muted)}
+.rng input{width:90px;font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.doc{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.doc h3{font-size:16px;margin:10px 0 6px}.urg{color:var(--bad);font-weight:600}.sm{font-size:13px;color:var(--muted)}
+.hl{padding-left:18px;margin:8px 0}.hl li{margin-bottom:8px}.btn{display:inline-block;padding:9px 14px;border-radius:10px;background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600}.hl a,#hosp p a:not(.btn){color:var(--accent)}#hosp h3{font-size:16px;margin:14px 0 4px}
+.foot{font-size:13px;color:var(--muted);margin-top:24px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+.toolbar button{border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:9px 12px;font:inherit;cursor:pointer}
+.toolbar button.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.toolbar button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.extras{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.extras label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.extras input{width:110px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.check{min-height:42px;display:flex;align-items:center;gap:7px;color:var(--ink)!important}
+.check input{width:auto}
+.inp input.invalid{border-color:var(--bad);outline:2px solid var(--bad)}
+@media print{
+  :root{--bg:#fff;--card:#fff;--ink:#000;--muted:#333;--line:#aaa;--accent:#333;--zone:#ddd}
+  main{max-width:none;padding:0}
+  .toolbar,.extras,.rng,.inp input{display:none!important}
+  .row{break-inside:avoid}
+  .seg{display:none}
+  a{color:inherit!important;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Анализы крови простыми словами</h1>
+  <p class="lead">Введите цифры из бланка. Программа покажет, какие показатели в пределах нормы, а какие стоит обсудить с врачом, и объяснит каждый показатель обычным языком.</p>
+  <p class="note">Это обучающий помощник, а не диагноз. Нормы у лабораторий немного отличаются, поэтому границы можно поправить под ваш бланк. Введённые данные остаются на вашем устройстве.</p>
+
+  <p class="lbl">Ваш пол (от него зависят некоторые нормы)</p>
+  <div class="seg" role="group" aria-label="Пол">
+    <button type="button" id="sm" aria-pressed="true">Мужской</button>
+    <button type="button" id="sf" aria-pressed="false">Женский</button>
+  </div>
+
+  <div class="extras">
+    <label>Возраст, лет
+      <input id="age" type="number" min="0" max="120" inputmode="numeric">
+    </label>
+    <label class="check"><input id="pregnant" type="checkbox"> Беременность</label>
+  </div>
+
+  <div class="toolbar" aria-label="Действия">
+    <button type="button" id="clear" class="primary">Очистить все</button>
+    <button type="button" id="print">Печать / сохранить PDF</button>
+  </div>
+
+  <section class="sum" aria-live="polite" id="sum">
+    <h2>Итог</h2>
+    <p>Пока ничего не введено. Начните с любого показателя из вашего бланка.</p>
+  </section>
+
+  <div id="list"></div>
+
+  <section class="sum" id="hosp">
+    <h2>Куда записаться в Тюмени</h2>
+    <p><b>Как записаться:</b> к терапевту обычно идут в свою поликлинику по месту прикрепления. Запись возможна через регистратуру, по телефону или через портал «Госуслуги» (раздел «Запись к врачу»). Для бесплатного приёма нужен полис ОМС.</p>
+    <p><a class="btn" href="https://yandex.ru/maps/?text=поликлиника%20Тюмень" target="_blank" rel="noopener">Найти ближайшую поликлинику на карте</a></p>
+    <p class="sm">Карта сама покажет, что рядом с вами: адрес вашего дома программе неизвестен.</p>
+    <h3>Городские поликлиники Тюмени</h3>
+    <p class="sm">У многих поликлиник несколько филиалов. К какому вы прикреплены, зависит от вашего адреса: уточните в регистратуре или на «Госуслугах».</p>
+    <ul class="hl">
+      <li><b>Городская поликлиника № 1</b>: ул. Газовиков, 6/1 (взрослые, кабинет 104), тел. +7 (3452) 56-00-50. <a href="https://yandex.ru/maps/?text=Тюмень%20Газовиков%206%20поликлиника%201" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 3</b>: ул. Ленина, 23; филиалы: ул. Охотская, 9, ул. Садовая, 35а, ул. Ямская, 96, ул. Ковалева, 9. <a href="https://yandex.ru/maps/?text=Тюмень%20Ленина%2023%20поликлиника%203" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 5</b>: Московский тракт, 35А. <a href="https://yandex.ru/maps/?text=Тюмень%20Московский%20тракт%2035А%20поликлиника%205" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 8</b>: ул. Любимая, 1 (Березняки); филиалы: ул. Ватутина, 10/б, ул. Дружбы, 157/1. <a href="https://yandex.ru/maps/?text=Тюмень%20Любимая%201%20поликлиника%208" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 12</b>: ул. Народная, 6; филиал: ул. Станционная, 26В/1. <a href="https://yandex.ru/maps/?text=Тюмень%20Народная%206%20поликлиника%2012" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 13</b>: ул. Казачьи Луга, 9, корп. 1. <a href="https://yandex.ru/maps/?text=Тюмень%20Казачьи%20Луга%209%20поликлиника%2013" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Городская поликлиника № 17</b>: ул. Монтажников, 41, корп. 1, тел. +7 (3452) 56-00-26; детское отделение: ул. Широтная, 102. <a href="https://yandex.ru/maps/?text=Тюмень%20Монтажников%2041%20поликлиника%2017" target="_blank" rel="noopener">На карте</a></li>
+    </ul>
+    <h3>Крупные государственные учреждения</h3>
+    <ul class="hl">
+      <li><b>Областная клиническая больница № 1</b>, консультативная поликлиника: ул. Котовского, 55 (2 этаж). <a href="https://yandex.ru/maps/?text=Тюмень%20Котовского%2055%20областная%20клиническая%20больница%201" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Областная клиническая больница № 1</b>, второй адрес: ул. Юрия Семовских, 10 (1 этаж). <a href="https://yandex.ru/maps/?text=Тюмень%20Юрия%20Семовских%2010%20областная%20клиническая%20больница%201" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Областная клиническая больница № 2</b>: ул. Мельникайте, 75, телефон по справочнику +7 (345) 256-22-02. <a href="https://yandex.ru/maps/?text=Тюмень%20Мельникайте%2075%20областная%20клиническая%20больница%202" target="_blank" rel="noopener">На карте</a></li>
+      <li><b>Тюменский кардиологический научный центр</b> (если направит кардиолог): ул. Мельникайте, 111. <a href="https://yandex.ru/maps/?text=Тюмень%20Мельникайте%20111%20кардиологический%20научный%20центр" target="_blank" rel="noopener">На карте</a></li>
+    </ul>
+    <h3>Платные центры (примеры)</h3>
+    <ul class="hl">
+      <li><b>Доктор Арбитайло</b>, диагностический центр: Заречный пр., 37, корп. 1.</li>
+      <li><b>РЖД-Медицина</b>: ул. Магнитогорская, 8/1.</li>
+      <li><b>Нефтяник-мед</b>: ул. 50 лет ВЛКСМ, 19/1.</li>
+    </ul>
+    <p class="sm">Данные взяты из открытых справочников и могли измениться. Перед визитом проверьте адрес, график и телефон на официальном сайте или в регистратуре. Список не является рекомендацией конкретной клиники. Для детей работают отдельные детские поликлиники при тех же больницах.</p>
+    <p class="sm">В экстренных случаях звоните 103 или 112.</p>
+  </section>
+
+  <p class="foot">Программа не заменяет врача. Один показатель редко говорит о болезни: врач смотрит на всю картину, жалобы и динамику. При плохом самочувствии не ждите, а обратитесь за помощью.</p>
+</main>
+
+<script>
+var T=[
+{n:'Гемоглобин',u:'г/л',r:{m:[130,170],f:[120,150]},w:'Белок в эритроцитах, который переносит кислород по телу.',l:'Чаще всего говорит о малокровии (анемии): нехватке железа или витаминов, потере крови. Бывает слабость, бледность, одышка.',h:'Бывает при обезвоживании, курении, жизни высоко в горах и некоторых болезнях крови или лёгких.'},
+{n:'Лейкоциты',u:'×10⁹/л',r:[4,9],w:'Клетки иммунитета. Их число растёт, когда организм борется с инфекцией.',l:'Может быть после вирусных инфекций, из-за некоторых лекарств или нарушений кроветворения.',h:'Часто бывает при инфекциях и воспалении, а также при стрессе и после курения.'},
+{n:'Тромбоциты',u:'×10⁹/л',r:[150,400],w:'Клетки, которые помогают крови сворачиваться и останавливают кровотечение.',l:'Больше риск кровоточивости и синяков. Причины разные: лекарства, инфекции, болезни крови.',h:'Бывает при воспалении, после операций, при нехватке железа.'},
+{n:'Глюкоза (натощак)',u:'ммоль/л',r:[3.9,5.5],w:'Сахар в крови, главное топливо для клеток.',l:'Может быть при долгих перерывах в еде, избытке инсулина или некоторых болезнях. Возможны слабость и дрожь.',h:'Повышенный сахар натощак — повод проверить обмен углеводов (риск преддиабета или диабета). Нужен врач.'},
+{n:'Общий холестерин',u:'ммоль/л',r:[null,5.2],w:'Жироподобное вещество. Нужно организму, но избыток откладывается в сосудах.',l:'Низкие значения встречаются редко, например при болезнях печени или недоедании.',h:'Повышает риск проблем с сосудами. Помогают питание, движение и, по решению врача, лекарства.'},
+{n:'ЛПНП («плохой» холестерин)',u:'ммоль/л',r:[null,3.0],w:'Переносит холестерин к сосудам. Его избыток формирует бляшки. Целевое значение врач выбирает с учётом вашего риска.',l:'Низкий уровень обычно не опасен.',h:'Чем выше, тем больше риск атеросклероза. Стоит обсудить питание и образ жизни с врачом.'},
+{n:'ЛПВП («хороший» холестерин)',u:'ммоль/л',r:{m:[1.0,null],f:[1.2,null]},w:'Забирает лишний холестерин из сосудов. Здесь важно, чтобы значение было не слишком низким.',l:'Низкий уровень повышает риск для сосудов. Помогают движение и отказ от курения.',h:'Высокий уровень обычно считается благоприятным.'},
+{n:'Триглицериды',u:'ммоль/л',r:[null,1.7],w:'Жиры крови. Растут от избытка сладкого, жирного и алкоголя.',l:'Низкие значения обычно не вызывают беспокойства.',h:'Бывает при избытке калорий, малоподвижности, алкоголе, диабете. Анализ сдают натощак.'},
+{n:'АЛТ',u:'Ед/л',r:{m:[null,41],f:[null,33]},w:'Фермент печени. Попадает в кровь, когда клетки печени повреждены.',l:'Низкие значения обычно не имеют значения.',h:'Может расти от алкоголя, жирового гепатоза, лекарств, вирусных гепатитов, сильной нагрузки.'},
+{n:'АСТ',u:'Ед/л',r:{m:[null,37],f:[null,31]},w:'Фермент печени, сердца и мышц.',l:'Низкие значения обычно не имеют значения.',h:'Растёт при болезнях печени, после тяжёлых тренировок, при повреждении мышц и сердца.'},
+{n:'Креатинин',u:'мкмоль/л',r:{m:[62,106],f:[44,80]},w:'Показывает, как почки очищают кровь. Зависит и от мышечной массы.',l:'Бывает при малой мышечной массе, беременности, большом потреблении жидкости.',h:'Может говорить о сниженной работе почек, обезвоживании или большой мышечной нагрузке.'},
+{n:'С-реактивный белок (СРБ)',u:'мг/л',r:[null,5],w:'Быстро растёт при воспалении или инфекции в организме.',l:'Низкий уровень — хороший знак.',h:'Говорит о воспалении, но не о его причине. Её определяет врач вместе с остальными данными.'},
+{n:'Ферритин',u:'мкг/л',r:{m:[30,400],f:[13,150]},w:'Запас железа в организме.',l:'Первый признак дефицита железа, иногда ещё до анемии. Частая причина — усталость и выпадение волос.',h:'Может расти при воспалении, болезнях печени и избытке железа. Нужно уточнить причину.'},
+{n:'ТТГ',u:'мЕд/л',r:[0.4,4.0],w:'Гормон гипофиза, который управляет работой щитовидной железы.',l:'Может говорить о повышенной активности щитовидной железы. Врач назначит дополнительные анализы.',h:'Может говорить о сниженной работе щитовидной железы. Нужны дополнительные анализы.'},
+{n:'Эритроциты',u:'×10¹²/л',r:{m:[4.0,5.5],f:[3.8,5.0]},w:'Клетки крови, которые переносят кислород.',l:'Может быть при анемии, крови или обезвоживании.',h:'Бывает при обезвоживании, курении, жизни высоко и некоторых болезнях крови.'},
+{n:'Гематокрит',u:'%',r:{m:[39,49],f:[35,45]},w:'Доля крови, которую занимают эритроциты.',l:'Чаще встречается при анемии или большой потере жидкости.',h:'Может быть при обезвоживании или повышенном числе эритроцитов.'},
+{n:'MCV',u:'фл',r:[80,100],w:'Средний размер эритроцита.',l:'Может говорить о дефиците железа или некоторых врождённых особенностях.',h:'Может быть при дефиците витамина B12 или фолата и после некоторых лекарств.'},
+{n:'MCH',u:'пг',r:[27,34],w:'Среднее количество гемоглобина в одном эритроците.',l:'Часто сочетается с анемией по недостатку железа.',h:'Может встречаться при анемии из-за дефицита витамина B12 или фолата.'},
+{n:'MCHC',u:'г/л',r:[320,360],w:'Средняя концентрация гемоглобина в эритроцитах.',l:'Может встречаться при анемии по дефициту железа.',h:'Реже встречается и может требовать проверки точности автоматического анализа.'},
+{n:'СОЭ',u:'мм/ч',r:{m:[0,15],f:[0,20]},w:'Скорость оседания эритроцитов. Это неспецифический маркер воспаления.',l:'Низкое значение обычно не вызывает беспокойства.',h:'Может расти при воспалении, инфекции, анемии, беременности или опухолевых процессах.'},
+{n:'Билирубин общий',u:'мкмоль/л',r:[null,21],w:'Продукт распада гемоглобина. Выводится печенью с желчью.',l:'Низкие значения обычно не имеют значения.',h:'Может расти при голодании, гемолизе, проблемах с печенью или оттоком желчи.'}
+];
+var DOC=[['гематолог'],['гематолог'],['гематолог'],['эндокринолог'],['кардиолог'],['кардиолог'],['кардиолог'],['эндокринолог'],['гастроэнтеролог (гепатолог)'],['гастроэнтеролог (гепатолог)'],['нефролог'],[],['гематолог'],['эндокринолог'],['гематолог'],['гематолог'],['гематолог'],['гематолог'],['гематолог'],[],['гастроэнтеролог (гепатолог)']];
+var sex='m',pregnant=false,vals={},custom={};
+function def(i){var r=T[i].r;
+  if(pregnant&&i===0)return [110,150];
+  if(pregnant&&i===12)return [10,150];
+  if(pregnant&&i===14)return [3.5,5.0];
+  return Array.isArray(r)?r:r[sex]}
+function rng(i){return custom[i]||def(i)}
+function fmt(x){return x==null?'':String(x).replace('.',',')}
+function parse(s){if(s==null)return null;s=String(s).replace(',','.').trim();if(s==='')return null;var v=Number(s);return isFinite(v)?v:NaN}
+function refText(i){var r=rng(i),u=T[i].u;
+  if(r[0]==null)return 'Норма: до '+fmt(r[1])+' '+u;
+  if(r[1]==null)return 'Норма: не ниже '+fmt(r[0])+' '+u;
+  return 'Норма: '+fmt(r[0])+'–'+fmt(r[1])+' '+u}
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+var list=document.getElementById('list');
+T.forEach(function(t,i){
+  var row=el('article','row');row.id='r'+i;
+  row.innerHTML=
+   '<div class="top"><div><div class="nm">'+t.n+'</div><div class="ref" id="rf'+i+'"></div></div>'+
+   '<div class="inp"><input id="v'+i+'" type="text" inputmode="decimal" autocomplete="off" aria-label="'+t.n+', значение" placeholder="значение"><span class="unit">'+t.u+'</span></div></div>'+
+   '<div class="bar" id="b'+i+'"><div class="zone" id="z'+i+'"></div><div class="mk" id="m'+i+'"></div></div>'+
+   '<p class="msg" id="g'+i+'"></p>'+
+   '<details><summary>Что это и что значат отклонения</summary>'+
+   '<p><b>Что это.</b> '+t.w+'</p><p><b>Если ниже нормы.</b> '+t.l+'</p><p><b>Если выше нормы.</b> '+t.h+'</p>'+
+   '<div class="rng"><span>Норма из вашего бланка:</span><label>от <input id="lo'+i+'" type="text" inputmode="decimal" placeholder="нет"></label><label>до <input id="hi'+i+'" type="text" inputmode="decimal" placeholder="нет"></label></div></details>';
+  list.appendChild(row);
+  document.getElementById('v'+i).addEventListener('input',function(e){var v=parse(e.target.value);e.target.classList.toggle('invalid',v!==null&&(isNaN(v)||v<0));vals[i]=v;upd(i);summary();saveState()});
+  function ed(){var a=parse(document.getElementById('lo'+i).value),b=parse(document.getElementById('hi'+i).value);
+    if((a==null&&b==null)||isNaN(a)||isNaN(b)){custom[i]=null}else{custom[i]=[a,b]}
+    upd(i);summary();saveState()}
+  document.getElementById('lo'+i).addEventListener('input',ed);
+  document.getElementById('hi'+i).addEventListener('input',ed);
+  setRange(i);
+});
+function setRange(i){var r=def(i);
+  if(!custom[i]){document.getElementById('lo'+i).value=fmt(r[0]);document.getElementById('hi'+i).value=fmt(r[1])}
+  document.getElementById('rf'+i).textContent=refText(i)}
+function evalOne(i){var v=vals[i];if(v==null||isNaN(v)||v<0)return null;
+  var r=rng(i),lo=r[0],hi=r[1];
+  if(lo!=null&&v<lo){var d=(lo-v)/lo;return{k:'low',d:d}}
+  if(hi!=null&&v>hi){var d2=(v-hi)/hi;return{k:'high',d:d2}}
+  return{k:'ok',d:0}}
+function level(d){return d<0.1?1:(d<0.3?2:3)}
+function upd(i){
+  var row=document.getElementById('r'+i),g=document.getElementById('g'+i);
+  document.getElementById('rf'+i).textContent=refText(i);
+  var e=evalOne(i);
+  if(!e){row.classList.remove('has');return}
+  row.classList.add('has');
+  var r=rng(i),lo=r[0],hi=r[1],sMin,sMax,zl,zr;
+  if(lo==null){sMin=0;sMax=hi*1.8;zl=0;zr=hi}
+  else if(hi==null){sMin=lo*0.4;sMax=lo*2;zl=lo;zr=sMax}
+  else{var sp=hi-lo;sMin=Math.max(0,lo-sp*0.7);sMax=hi+sp*0.7;zl=lo;zr=hi}
+  var P=function(x){return Math.max(0,Math.min(100,(x-sMin)/(sMax-sMin)*100))};
+  var z=document.getElementById('z'+i);z.style.left=P(zl)+'%';z.style.width=(P(zr)-P(zl))+'%';
+  document.getElementById('m'+i).style.left=P(vals[i])+'%';
+  var cls,st,tx;
+  if(e.k==='ok'){cls='s-ok';st='В пределах нормы.';tx=''}
+  else{var L=level(e.d),dir=e.k==='low'?'ниже':'выше';
+    if(L===1){cls='s-warn';st='Чуть '+dir+' нормы.';tx=' Небольшое отклонение: упомяните врачу, особенно если есть жалобы.'}
+    else if(L===2){cls='s-warn';st='Заметно '+dir+' нормы.';tx=' Лучше обсудить с врачом. Не ставьте диагноз по одной цифре.'}
+    else{cls='s-bad';st='Значительно '+dir+' нормы.';tx=' Не откладывайте визит к врачу и принесите бланк с собой.'}}
+  g.innerHTML='<span class="st '+cls+'">'+st+'</span>'+tx;
+}
+function summary(){
+  var ok=0,out=[],n=0;
+  T.forEach(function(t,i){var e=evalOne(i);if(!e)return;n++;if(e.k==='ok')ok++;else out.push({i:i,e:e})});
+  var s=document.getElementById('sum');
+  if(!n){s.innerHTML='<h2>Итог</h2><p>Пока ничего не введено. Начните с любого показателя из вашего бланка.</p>';return}
+  var h='<h2>Итог</h2><p>Введено показателей: '+n+'. В пределах нормы: <b>'+ok+'</b>, вне нормы: <b>'+out.length+'</b>.</p>';
+  if(out.length){
+    h+='<p>Что можно обсудить с врачом:</p><ul>';
+    out.forEach(function(o){var t=T[o.i],v=fmt(vals[o.i]);
+      h+='<li>'+t.n+': '+v+' '+t.u+' ('+(o.e.k==='low'?'ниже':'выше')+' нормы)</li>'});
+    h+='</ul>'+docBlock(out)}
+  else h+='<p>Все введённые показатели в пределах нормы. Если есть жалобы, всё равно скажите о них врачу.</p>';
+  s.innerHTML=h}
+function docBlock(out){
+  var sp={},ord=[],big=false;
+  function add(s,n){if(!sp[s]){sp[s]=[];ord.push(s)}sp[s].push(n)}
+  out.forEach(function(o){add('терапевт',T[o.i].n);DOC[o.i].forEach(function(s){add(s,T[o.i].n)});if(level(o.e.d)===3)big=true});
+  var h='<div class="doc"><h3>К какому врачу обратиться</h3>';
+  if(big)h+='<p class="urg">Есть значительные отклонения: запишитесь к врачу в ближайшие дни, не откладывайте.</p>';
+  h+='<ul>';
+  ord.forEach(function(s){
+    if(s==='терапевт')h+='<li><b>Терапевт</b>. Начните с него: он оценит всю картину и при необходимости направит к специалисту. Показатели: '+sp[s].join(', ')+'.</li>';
+    else h+='<li><b>'+s.charAt(0).toUpperCase()+s.slice(1)+'</b>, если терапевт сочтёт нужным. Показатели: '+sp[s].join(', ')+'.</li>'});
+  h+='</ul><h3>Вопросы для приёма</h3><ul><li>Какие причины этих отклонений возможны в моём случае?</li><li>Нужно ли сдать анализ повторно и когда?</li><li>Какие дополнительные обследования нужны?</li><li>Влияют ли на результат мои лекарства, питание или образ жизни?</li></ul>';
+  h+='<p class="sm">Сильная боль в груди, затруднённое дыхание, потеря сознания или сильное кровотечение: не ждите приёма, сразу вызывайте скорую помощь (103 или 112).</p></div>';
+  return h}
+function setSex(x){sex=x;
+  document.getElementById('sm').setAttribute('aria-pressed',x==='m');
+  document.getElementById('sf').setAttribute('aria-pressed',x==='f');
+  if(x==='m'){
+    pregnant=false;
+    document.getElementById('pregnant').checked=false;
+    document.getElementById('pregnant').disabled=true;
+  }else{
+    document.getElementById('pregnant').disabled=false;
+  }
+  T.forEach(function(t,i){setRange(i);upd(i)});summary();saveState()}
+document.getElementById('sm').addEventListener('click',function(){setSex('m')});
+document.getElementById('sf').addEventListener('click',function(){setSex('f')});
+var STORAGE='blood-analysis-v1';
+function saveState(){
+  var lo={},hi={},errors={};
+  T.forEach(function(t,i){
+    lo[i]=document.getElementById('lo'+i).value;
+    hi[i]=document.getElementById('hi'+i).value;
+  });
+  try{localStorage.setItem(STORAGE,JSON.stringify({
+    sex:sex,pregnant:pregnant,age:document.getElementById('age').value,
+    vals:vals,custom:custom,lo:lo,hi:hi
+  }))}catch(e){}
+}
+function loadState(){
+  var data;
+  try{data=JSON.parse(localStorage.getItem(STORAGE)||'null')}catch(e){data=null}
+  if(!data)return;
+  sex=data.sex==='f'?'f':'m';
+  pregnant=data.pregnant===true;
+  document.getElementById('pregnant').checked=pregnant;
+  document.getElementById('age').value=data.age||'';
+  vals=data.vals||{};
+  T.forEach(function(t,i){
+    var key=String(i);
+    if(data.vals&&data.vals[key]!=null){
+      document.getElementById('v'+i).value=fmt(data.vals[key]);
+    }
+  });
+  custom=data.custom||{};
+  T.forEach(function(t,i){
+    var key=String(i);
+    if(data.lo&&data.lo[key]!==undefined)document.getElementById('lo'+i).value=data.lo[key];
+    if(data.hi&&data.hi[key]!==undefined)document.getElementById('hi'+i).value=data.hi[key];
+  });
+  document.getElementById('sm').setAttribute('aria-pressed',sex==='m');
+  document.getElementById('sf').setAttribute('aria-pressed',sex==='f');
+  document.getElementById('pregnant').disabled=sex==='m';
+  T.forEach(function(t,i){upd(i)});
+  summary();
+}
+document.getElementById('pregnant').addEventListener('change',function(e){
+  pregnant=e.target.checked;
+  T.forEach(function(t,i){setRange(i);upd(i)});
+  summary();saveState();
+});
+document.getElementById('age').addEventListener('input',saveState);
+document.getElementById('clear').addEventListener('click',function(){
+  vals={};custom={};
+  document.getElementById('age').value='';
+  T.forEach(function(t,i){
+    document.getElementById('v'+i).value='';
+    document.getElementById('v'+i).classList.remove('invalid');
+    document.getElementById('r'+i).classList.remove('has');
+    setRange(i);
+  });
+  try{localStorage.removeItem(STORAGE)}catch(e){}
+  summary();
+});
+document.getElementById('print').addEventListener('click',function(){window.print()});
+document.getElementById('sf').addEventListener('click',function(){document.getElementById('pregnant').disabled=false});
+document.getElementById('sm').addEventListener('click',function(){
+  document.getElementById('pregnant').disabled=true;
+  if(pregnant){pregnant=false;document.getElementById('pregnant').checked=false}
+});
+loadState();
+</script>
+</body>
+</html>
