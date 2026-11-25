@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: anatomey
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
